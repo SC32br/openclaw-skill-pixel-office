@@ -32,6 +32,64 @@ Each agent appears as an animated pixel character — walking, stretching, meeti
 
 ---
 
+## Requirements
+
+- **Node.js 20+** — required for `better-sqlite3`, `@tailwindcss/oxide`, and Next.js 16
+  ```bash
+  node --version  # must be v20.x or v22.x
+  # nvm users: nvm install 22 && nvm use 22
+  ```
+- nginx (for reverse proxy)
+- OpenClaw Gateway running locally
+
+## Quick Start
+
+```bash
+# 1. Clone
+git clone https://github.com/SC32br/openclaw-skill-pixel-office pixel-office
+cd pixel-office
+
+# 2. Install deps (Node 20+ required)
+npm install
+
+# 3. Configure environment
+cp .env.example .env.local
+# Edit .env.local — set OPENCLAW_TOKEN and OPENCLAW_GATEWAY_URL
+
+# 4. Create database tables (run once)
+npm run db:push
+
+# 5. Build and start
+npm run build
+npm start
+```
+
+## Data Model — Agents vs Bots vs Sessions
+
+Understanding what shows on the map:
+
+```
+OpenClaw Workspace
+│
+├── Sessions (source of truth for the map)
+│   └── Fetched via POST /tools/invoke → sessions_list
+│   └── Each session with key "agent:main:<label>" = one agent on the map
+│
+├── Bots (channels — Telegram, MAX, Discord, etc.)
+│   └── A bot ≠ an agent. One bot can serve many agents.
+│   └── An agent can have zero bots (runs headlessly).
+│
+└── Workspace folders (your project structure)
+    └── Not read directly — only active Gateway sessions appear on map.
+```
+
+**Rule:** The number of agents on the map = number of active OpenClaw sessions, not bots or workspace folders.
+
+To populate the map:
+1. Set `OPENCLAW_TOKEN` in `.env.local`
+2. Start your OpenClaw agents (they register as sessions)
+3. Refresh the dashboard
+
 ## ⚡ One-Command Install
 
 Just tell your OpenClaw agent:
