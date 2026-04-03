@@ -6,15 +6,18 @@ After=network.target
 Type=simple
 User=openclaw
 WorkingDirectory=/home/openclaw/agents-workspace/pixel-office
-ExecStart=/usr/bin/node node_modules/.bin/next start -p 3001
+
+# ⚠️  Do NOT use /usr/bin/node — it may be old or missing.
+# Find your node path: which node
+# nvm users typically: /home/openclaw/.nvm/versions/node/v22.x.x/bin/node
+ExecStart=/bin/bash -c 'exec $(which node) node_modules/.bin/next start -p 3001'
+
 Restart=on-failure
 RestartSec=5
 Environment=NODE_ENV=production
 Environment=PORT=3001
-# Add your env vars below:
-# Environment=OPENCLAW_GATEWAY_URL=http://localhost:18789
-# Environment=OPENCLAW_TOKEN=your_token_here
-# Environment=DATABASE_URL=/home/openclaw/agents-workspace/pixel-office/data/office.db
+# Copy .env.example → .env.local, fill in values, then point here:
+EnvironmentFile=/home/openclaw/agents-workspace/pixel-office/.env.local
 
 [Install]
 WantedBy=multi-user.target
