@@ -37,15 +37,15 @@ export interface DeskPosition {
   y: number;
 }
 
-// Fixed desk grid — supports up to 12 agents
-// Assign positions dynamically from agent list order
-export const DESK_GRID: Array<{ x: number; y: number }> = [
+// Fixed grid of desk positions — supports up to 12 agents
+// Populated dynamically via buildDeskPositions() when agents load
+export const DESK_GRID: DeskPosition[] = [
   { x: 150, y: 200 }, { x: 350, y: 200 }, { x: 550, y: 200 }, { x: 750, y: 200 },
   { x: 150, y: 370 }, { x: 350, y: 370 }, { x: 550, y: 370 }, { x: 750, y: 370 },
   { x: 250, y: 520 }, { x: 450, y: 520 }, { x: 650, y: 520 }, { x: 850, y: 520 },
 ];
 
-// Build DESK_POSITIONS dynamically from an ordered list of agent IDs
+// Build a positions map from any list of agent IDs — order determines desk assignment
 export function buildDeskPositions(agentIds: string[]): Record<string, DeskPosition> {
   const result: Record<string, DeskPosition> = {};
   agentIds.forEach((id, i) => {
@@ -56,7 +56,7 @@ export function buildDeskPositions(agentIds: string[]): Record<string, DeskPosit
   return result;
 }
 
-// Mutable global — populated at runtime via buildDeskPositions
+// Populated at runtime by PixelOffice component — do not hardcode agent IDs here
 export let DESK_POSITIONS: Record<string, DeskPosition> = {};
 
 export const MEETING_SEATS: { x: number; y: number }[] = [
@@ -76,15 +76,11 @@ export function createOfficeEnvironment(width: number, height: number): Containe
   office.addChild(drawWalls(width, height));
   office.addChild(drawDecorations(width, height));
 
-  // Draw desks for all currently known positions
-  for (const [id, pos] of Object.entries(DESK_POSITIONS)) {
-    const idx = Object.keys(DESK_POSITIONS).indexOf(id);
-    const deskType: DeskType =
-      idx === 0 ? "coordinator" :
-      idx % 4 === 1 || idx % 4 === 2 ? "analyst" :
-      idx % 2 === 0 ? "writer" : "producer";
-    office.addChild(drawDesk(pos.x, pos.y, deskType));
-  }
+  // Draw desks for all registered agents — desk type assigned by position index
+  const deskTypes: DeskType[] = ["coordinator", "analyst", "writer", "producer", "analyst", "writer", "producer", "analyst", "writer", "producer", "coordinator", "analyst"];
+  DESK_GRID.forEach((pos, i) => {
+    office.addChild(drawDesk(pos.x, pos.y, deskTypes[i % deskTypes.length]));
+  });
 
   // Shared furniture
   office.addChild(drawWaterCooler(WATER_COOLER_POS.x, WATER_COOLER_POS.y));
@@ -95,6 +91,49 @@ export function createOfficeEnvironment(width: number, height: number): Containe
   office.addChild(drawAmbientLights());
 
   return office;
+}
+
+function drawZoneDivider(x: number, yStart: number, height: number): Container {
+  const container = new Container();
+  container.label = "zone-divider";
+  const g = new Graphics();
+
+  // Dotted vertical line
+  for (let y = yStart; y < yStart + height; y += 12) {
+    g.rect(x, y, 2, 6);
+    g.fill({ color: 0x444444, alpha: 0.5 });
+  }
+
+  // "Pixel Office" label (left zone)
+  const labelStyleLeft = new TextStyle({
+    fontFamily: '"Courier New", monospace',
+    fontSize: 11,
+    fontWeight: "bold",
+    fill: 0xecb00a,
+    align: "center",
+  });
+  const virusyLabel = new Text({ text: "🐱 Pixel Office", style: labelStyleLeft });
+  virusyLabel.anchor.set(1, 0.5);
+  virusyLabel.x = x - 8;
+  virusyLabel.y = yStart + 12;
+  container.addChild(virusyLabel);
+
+  // Right zone label
+  const labelStyleRight = new TextStyle({
+    fontFamily: '"Courier New", monospace',
+    fontSize: 11,
+    fontWeight: "bold",
+    fill: 0xe74c3c,
+    align: "center",
+  });
+  const rightLabel = new Text({ text: "⚡ Agents", style: labelStyleRight });
+  rightLabel.anchor.set(0, 0.5);
+  rightLabel.x = x + 8;
+  rightLabel.y = yStart + 12;
+  container.addChild(rightLabel);
+
+  container.addChild(g);
+  return container;
 }
 
 function drawFloor(w: number, h: number): Graphics {
@@ -223,8 +262,8 @@ function drawDecorations(w: number, h: number): Graphics {
   drawMediumPlant(g, 140, 14);        // windowsill left
   drawMediumPlant(g, 580, 14);        // windowsill center
   drawMediumPlant(g, 900, 14);        // windowsill right
-  drawMediumPlant(g, 240, 490);       // between desks row 2
-  drawMediumPlant(g, 790, 490);       // between desks row 2
+  drawMediumPlant(g, 240, 490);       // between virusy desks
+  drawMediumPlant(g, 790, 490);       // between desks
 
   // Bookshelf on right wall
   g.rect(w - 55, 70, 45, 80);
@@ -257,7 +296,7 @@ function drawDecorations(w: number, h: number): Graphics {
   g.fill(0x2a2a2a);
   g.rect(202, 10, 46, 34);
   g.fill(0x1a1a2e);
-  // lightning bolt design
+  // "⚡" lightning bolt design
   g.rect(216, 16, 4, 8);
   g.fill(ACCENT);
   g.rect(220, 22, 4, 8);
