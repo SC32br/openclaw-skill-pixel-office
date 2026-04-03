@@ -1,30 +1,16 @@
 import { NextResponse } from "next/server";
 
-const SESSION_LABEL_MAP: Record<string, string> = {
-  main: "debosh-main",
-  "debosh-main": "debosh-main",
-  "debosh-marketer": "debosh-marketer",
-  "debosh-copywriter": "debosh-copywriter",
-  "debosh-poster": "debosh-poster",
-  "debosh-storymaker": "debosh-storymaker",
-  "debosh-analyst": "debosh-analyst",
-  "debosh-targetologist": "debosh-targetologist",
-  "debosh-stats": "debosh-stats",
-  "carousel-maker": "carousel-maker",
-  "debosh-video": "debosh-video",
-};
+// SESSION_LABEL_MAP: optional mapping from session label to display agent ID.
+// Fill this in via env or leave empty to use session labels as-is.
+// Example: { "main": "coordinator", "my-agent": "my-agent" }
+const SESSION_LABEL_MAP: Record<string, string> = {};
 
+// MOCK_AGENTS: shown when OpenClaw gateway is unavailable.
+// Generic placeholders — replace with your own agent IDs after setup.
 const MOCK_AGENTS = [
-  { id: "debosh-main", status: "working", statusText: "Координирую задачи", contextPct: 45 },
-  { id: "debosh-marketer", status: "idle", statusText: null, contextPct: 0 },
-  { id: "debosh-copywriter", status: "idle", statusText: null, contextPct: 0 },
-  { id: "debosh-poster", status: "idle", statusText: null, contextPct: 0 },
-  { id: "debosh-storymaker", status: "idle", statusText: null, contextPct: 0 },
-  { id: "debosh-analyst", status: "idle", statusText: null, contextPct: 0 },
-  { id: "debosh-targetologist", status: "idle", statusText: null, contextPct: 0 },
-  { id: "debosh-stats", status: "idle", statusText: null, contextPct: 0 },
-  { id: "carousel-maker", status: "idle", statusText: null, contextPct: 0 },
-  { id: "debosh-video", status: "idle", statusText: null, contextPct: 0 },
+  { id: "agent-1", status: "working", statusText: "Processing tasks", contextPct: 45 },
+  { id: "agent-2", status: "idle", statusText: null, contextPct: 0 },
+  { id: "agent-3", status: "idle", statusText: null, contextPct: 0 },
 ];
 
 export async function GET() {
