@@ -1,333 +1,233 @@
-<div align="center">
+# 🖥️ Pixel Office — OpenClaw AI Agent Dashboard
 
-# 🏢 openclaw-skill-pixel-office
+[![OpenClaw Skill](https://img.shields.io/badge/OpenClaw-Skill-blueviolet?style=flat-square)](https://github.com/SC32br/openclaw-skill-pixel-office)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org)
+[![Pixi.js](https://img.shields.io/badge/Pixi.js-v8-e91e63?style=flat-square)](https://pixijs.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-**A retro pixel art office dashboard for your OpenClaw AI agents**
+**Live pixel-art office dashboard for your OpenClaw AI agents.**  
+Each agent appears as an animated pixel character — walking, stretching, meeting, going to the water cooler — with real-time status and an activity feed.
 
-[![OpenClaw Skill](https://img.shields.io/badge/OpenClaw-Skill-6c47ff?style=for-the-badge)](https://openclaw.ai)
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
-[![Pixi.js](https://img.shields.io/badge/Pixi.js-Canvas-e91e63?style=for-the-badge)](https://pixijs.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  🤖 Pixel Office                                    [LIVE] ●    │
+├──────────────────────────────────────┬──────────────────────────┤
+│                                      │  👥 Agents               │
+│   ┌───┐  ┌───┐  ┌───┐  ┌───┐        │  🤖 Main      ● Working  │
+│   │ 💻│  │ 💻│  │ 💻│  │ 💻│        │  📊 Marketer  ● Thinking │
+│   └───┘  └───┘  └───┘  └───┘        │  ✍️  Writer    ○ Idle     │
+│    [A]    [B]    [C]    [D]          │  📢 Publisher ● Working  │
+│                                      │                          │
+│   ┌───┐  ┌───┐  ┌───┐  ┌───┐        │  🔴 Live Feed            │
+│   │ 💻│  │ 💻│  │ 💻│  │ 💻│        │  14:32 🤖 Processing...  │
+│   └───┘  └───┘  └───┘  └───┘        │  14:31 📊 Strategy done  │
+│    [E]    [F]    [G]    [H]          │  14:30 ✍️  Post written   │
+│                                      │                          │
+│         ┌──────────────────┐         │                          │
+│         │  🤝 MEETING ROOM  │         │                          │
+│         └──────────────────┘         │                          │
+│  [LIVE ●]           [🤝 Gather All]  │                          │
+└──────────────────────────────────────┴──────────────────────────┘
+```
 
 ---
 
-**Watch your AI agents live — animated pixel characters on a retro office map**
+## ⚡ One-Command Install
 
-[🚀 Quick Start](#quick-start) · [🗺️ How It Works](#how-it-works) · [⚙️ Configuration](#configuration) · [🛠 Deploy](#deploy) · [🐛 Troubleshooting](#troubleshooting)
+Just tell your OpenClaw agent:
 
-</div>
+> **"install pixel office"** or **"установи пиксельный офис"**
 
----
+The agent will:
+1. Clone this repo to `~/agents-workspace/pixel-office`
+2. Build the Next.js app
+3. Generate a random 8-char password
+4. Create a systemd service on port 3001
+5. Configure nginx with proper locations
+6. Set up HTTP Basic Auth
+7. Give you the URL + credentials
 
-## What Is This?
-
-A **live pixel art office** that visualizes all your OpenClaw AI agents as animated retro characters. Each agent has a desk on the map, moves based on status, and shows activity in a live feed.
-
-Built with **Next.js 15** + **Pixi.js** for canvas rendering. Served behind nginx with Basic Auth.
-
-<div align="center">
-
-```
-┌─────────────────────────────────────────────────────┐
-│  🦠 Вируся AI Office                    LIVE  🔴    │
-│  10 агентов • 3 онлайн                  CRT [ON]    │
-├──────────────────────────────────┬──────────────────┤
-│                                  │  👥 АГЕНТЫ        │
-│   [pixel office map canvas]      │  📋 Маркетолог   │
-│                                  │  ● Working       │
-│   🧑 🧑‍💻    🧑‍💻                   │  ✍️ Копирайтер   │
-│         🧑‍💻  🏃                   │  ● Idle          │
-│   🧑‍💻         🧑‍💻                  │  🤖 Клодик       │
-│                                  │  ● Working       │
-│                                  ├──────────────────┤
-│                                  │  LIVE FEED       │
-│                                  │  13:48 Анализ... │
-│                                  │  13:47 Пишу пост │
-└──────────────────────────────────┴──────────────────┘
-```
-
-</div>
+Full install instructions are in [SKILL.md](SKILL.md).
 
 ---
 
-## Features
+## 🏗️ Architecture
 
-| Feature | Description |
-|---------|-------------|
-| 🗺️ **Pixel office map** | Retro pixel art environment — desks, shelves, plants, whiteboards |
-| 🏃 **Live animations** | Agents animate based on status: idle bouncing, working running, error shaking |
-| 📊 **Status sidebar** | All agents listed with role, emoji, and current state |
-| 📡 **Live Feed** | Real-time scrolling log of agent activity |
-| 🖥️ **CRT scanline effect** | Toggle retro CRT screen overlay |
-| 🔴 **LIVE indicator** | Pulsing dot when any agent is active |
-| 🤝 **"Gather all" button** | Animate all agents to center of map |
-| 🔒 **Basic Auth** | nginx password protection |
+```
+Browser
+  └── nginx (your domain)
+        ├── /office/*    → proxy :3001  (auth required)
+        ├── /_next/*     → proxy :3001  (auth required — serves JS bundles)
+        └── /api/*       → proxy :3001  (NO auth — XHR must work)
+                                │
+                          Next.js :3001
+                          ├── /office/stream  → PixelOffice canvas (Pixi.js v8)
+                          ├── /api/agents     → SQLite via drizzle-orm
+                          ├── /api/activity/feed
+                          └── /api/openclaw/stats → OpenClaw Gateway
+                                                     (optional, for token stats)
+```
+
+**Stack:**
+| Layer | Tech |
+|-------|------|
+| Frontend | Next.js 16, React 19, Pixi.js v8, Zustand |
+| Styling | Tailwind CSS v4 |
+| Database | SQLite (better-sqlite3 + drizzle-orm) |
+| Auth | nginx HTTP Basic Auth |
+| Process | systemd |
+| Runtime | Node.js 18+ |
 
 ---
 
-## How It Works
+## ⚙️ Configuration
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│  Browser  →  nginx (Basic Auth, port 443)                    │
-│                                                              │
-│  /_next/static/*  →  proxy_pass :3001  (JS/CSS assets)       │
-│  /api/*           →  proxy_pass :3001  (no auth, XHR safe)   │
-│  /office/*        →  rewrite + proxy_pass :3001              │
-│                                                              │
-│  Next.js app (port 3001)                                     │
-│    /office/stream     ← main page (Pixi.js canvas)           │
-│    /api/agents        ← reads agents from OpenClaw Gateway   │
-│    /api/openclaw/stats ← token usage, costs                  │
-│                                                              │
-│  OpenClaw Gateway (port 18789)                               │
-│    GET /agents  →  returns all registered agents + status    │
-└──────────────────────────────────────────────────────────────┘
-```
+Edit `~/agents-workspace/pixel-office/.env.local`:
 
-**Key insight:** `/_next/` static assets **must** proxy to Next.js (port 3001), not the OpenClaw gateway (port 18789). Without this, JS chunks return 404 → Pixi.js never loads → blank canvas.
+```env
+NODE_ENV=production
+PORT=3001
 
----
-
-## Quick Start
-
-### 1. Clone and install
-
-```bash
-cd ~/agents-workspace
-git clone https://github.com/SC32br/openclaw-skill-pixel-office virusy-office
-cd virusy-office
-npm install
-```
-
-### 2. Set environment variables
-
-```bash
-cat > .env.local << EOF
+# OpenClaw Gateway — for real token/cost stats (optional)
 OPENCLAW_GATEWAY_URL=http://localhost:18789
-OPENCLAW_TOKEN=your_openclaw_gateway_token
-EOF
+OPENCLAW_TOKEN=your_openclaw_token
+
+# SQLite database
+DATABASE_URL=/home/openclaw/agents-workspace/pixel-office/data/office.db
 ```
 
-### 3. Build and run
+After changes: `sudo systemctl restart pixel-office`
+
+### Adding Your Agents
+
+Agents are stored in the SQLite database. The app reads them from `/api/agents` and maps them to pixel characters on the canvas.
+
+You can insert agents via drizzle migrations or directly with SQLite:
+
+```sql
+INSERT INTO agents (id, name, role, emoji, currentStatus)
+VALUES ('main', 'Main Agent', 'Coordinator', '🤖', 'idle');
+```
+
+---
+
+## 🚀 Manual Install
+
+If you prefer to install manually instead of using the skill:
 
 ```bash
+# 1. Clone
+cd ~/agents-workspace
+git clone https://github.com/SC32br/openclaw-skill-pixel-office pixel-office
+cd pixel-office
+
+# 2. Build
+npm install
 npm run build
-npm start
-# Running on http://localhost:3001
-```
 
-### 4. Configure nginx
+# 3. Create .env.local
+cp .env.example .env.local  # edit as needed
 
-Add to your nginx server block (see `deploy/nginx-location.conf`):
+# 4. systemd service
+sudo cp deploy/pixel-office.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now pixel-office
 
-```nginx
-# ⚠️ Critical: _next/ must proxy to Next.js, not gateway
-location ^~ /_next/ {
-    auth_basic "Office";
-    auth_basic_user_file /etc/nginx/.htpasswd;
-    proxy_pass http://127.0.0.1:3001;
-    proxy_set_header Host $host;
-    proxy_set_header X-Forwarded-Proto $scheme;
-}
+# 5. nginx — add to your server {} block
+# See deploy/nginx-location.conf for the required location blocks
 
-# API — no auth (browser XHR won't send Basic Auth headers)
-location ^~ /api/ {
-    proxy_pass http://127.0.0.1:3001;
-    proxy_set_header Host $host;
-}
+# 6. htpasswd
+PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
+sudo sh -c "echo -n 'office:' >> /etc/nginx/.htpasswd"
+sudo sh -c "openssl passwd -apr1 '$PASSWORD' >> /etc/nginx/.htpasswd"
+echo "Password: $PASSWORD"
 
-# Dashboard
-location ^~ /office/ {
-    auth_basic "Office";
-    auth_basic_user_file /etc/nginx/.htpasswd;
-    rewrite ^/office/(.*)$ /$1 break;
-    proxy_pass http://127.0.0.1:3001;
-    proxy_set_header Host $host;
-    proxy_set_header X-Forwarded-Proto $scheme;
-}
-
-location = /office {
-    return 302 /office/stream;
-}
-```
-
-```bash
-# Create password
-sudo htpasswd -c /etc/nginx/.htpasswd youruser
+# 7. Reload
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-### 5. Open the dashboard
-
-```
-https://yourdomain.com/office/
-```
-
 ---
 
-## Configuration
+## 🔧 Troubleshooting
 
-### Environment Variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `OPENCLAW_GATEWAY_URL` | ✅ | Gateway URL, e.g. `http://localhost:18789` |
-| `OPENCLAW_TOKEN` | ✅ | Gateway token from `openclaw.json` |
-| `PORT` | ❌ | Next.js port (default: 3001) |
-
-### Agent Positions
-
-Each agent on the map needs `positionX` and `positionY`. These are set when agents are registered in OpenClaw and stored in the agents database.
-
-Default positions (pixels on 1000×700 canvas):
-
-```
-(100, 400)  — Main coordinator   (center-left)
-(600, 200)  — Marketer           (top-right area)
-(750, 200)  — Copywriter
-(600, 350)  — Publisher
-(750, 350)  — Storymaker
-(600, 500)  — Analyst
-(750, 500)  — Targetologist
-(880, 160)  — Stats agent
-(150, 540)  — Carousel maker
-(330, 540)  — Video agent
-```
-
----
-
-## Deploy
-
-### Systemd service
+### White screen / Pixi.js not loading
+**Cause:** Missing `/_next/` location block in nginx → JS chunks return 404.  
+**Fix:** Add the `/_next/` location block from `deploy/nginx-location.conf`.
 
 ```bash
-sudo cp deploy/virusy-office.service /etc/systemd/system/
-# Edit Environment= lines with your token
-sudo systemctl daemon-reload
-sudo systemctl enable --now virusy-office
-sudo systemctl status virusy-office
+# Check browser console for:
+# GET https://yourdomain.com/_next/static/chunks/... 404
 ```
 
-`deploy/virusy-office.service`:
+### 0 agents shown in sidebar
+**Cause:** `auth_basic` on `/api/` location → XHR gets 401.  
+**Fix:** Remove `auth_basic` from the `/api/` location block.
 
-```ini
-[Unit]
-Description=Vируся AI Office Dashboard
-After=network.target
-
-[Service]
-Type=simple
-User=openclaw
-WorkingDirectory=/home/openclaw/agents-workspace/virusy-office
-ExecStart=/home/openclaw/.nvm/versions/node/v22.22.2/bin/node node_modules/.bin/next start -p 3001
-Restart=always
-RestartSec=5
-Environment=NODE_ENV=production
-Environment=PORT=3001
-Environment=OPENCLAW_GATEWAY_URL=http://localhost:18789
-Environment=OPENCLAW_TOKEN=your_token_here
-
-[Install]
-WantedBy=multi-user.target
-```
-
-### Disk space
-
-- Next.js build: ~200 MB
-- Node modules: ~500 MB
-- Total: ~700 MB — ensure at least 1 GB free before building
-
----
-
-## Troubleshooting
-
-### 0 agents / blank canvas
-
-Most common cause: **`/_next/` not proxied to port 3001**.
-
+### Service not starting
 ```bash
-# Test: should return JS, not 404
-curl -u user:pass https://yourdomain.com/_next/static/chunks/main.js -I
-# Must return: Content-Type: application/javascript
+sudo journalctl -u pixel-office -n 50 --no-pager
 ```
 
-Fix: add `location ^~ /_next/` to nginx config (see above).
-
-### 401 on /api/agents
-
-`/api/` location has `auth_basic` → browser XHR returns 401 → 0 agents shown.
-
-Fix: remove `auth_basic` from `/api/` location — Next.js middleware handles auth internally.
-
-### Pixi.js canvas not rendering
-
-Check browser console (F12):
-- `Refused to execute script ... MIME type 'text/plain'` → `/_next/` not proxied
-- `Failed to load resource: 404` → same issue
-- No errors but blank → check `OPENCLAW_GATEWAY_URL` and `OPENCLAW_TOKEN`
-
-### Build fails: "No space left on device"
-
+### Port conflict
 ```bash
-df -h /
-# Need 1+ GB free
-sudo journalctl --vacuum-size=100M
-sudo apt-get clean
-pip cache purge
+sudo lsof -i :3001
+# Change PORT in .env.local and update nginx proxy_pass
+```
+
+### Build errors
+```bash
+node --version  # must be ≥ 18.x
+npm install
+npm run build 2>&1 | tail -40
 ```
 
 ---
 
-## File Structure
+## 📁 Project Structure
 
 ```
-openclaw-skill-pixel-office/
-├── SKILL.md                    # OpenClaw skill descriptor
-├── README.md                   # This file
+pixel-office/
+├── SKILL.md                    # OpenClaw auto-installer
+├── deploy/
+│   ├── nginx-location.conf     # nginx location blocks (copy into server {})
+│   └── pixel-office.service    # systemd service unit
 ├── src/
 │   ├── app/
 │   │   ├── api/
-│   │   │   ├── agents/         # GET /api/agents
-│   │   │   └── openclaw/stats/ # GET /api/openclaw/stats
+│   │   │   ├── agents/         # GET /api/agents → SQLite
+│   │   │   ├── activity/feed/  # GET /api/activity/feed
+│   │   │   └── openclaw/stats/ # GET /api/openclaw/stats → Gateway
 │   │   ├── office/stream/      # Main dashboard page
-│   │   └── layout.tsx
-│   ├── components/
-│   │   ├── PixelOffice.tsx     # Pixi.js canvas component
-│   │   ├── AgentSidebar.tsx    # Right panel
-│   │   └── LiveFeed.tsx        # Activity log
-│   └── middleware.ts           # Auth middleware
-├── deploy/
-│   ├── nginx-location.conf     # nginx config snippet
-│   └── virusy-office.service  # systemd unit
-├── public/
-│   └── assets/                 # Pixel art sprites
-└── LICENSE
+│   │   └── stream/             # Alt stream route
+│   ├── components/office/
+│   │   ├── PixelOffice.tsx     # Main Pixi.js canvas component
+│   │   ├── drawAgent.ts        # Pixel character rendering
+│   │   └── drawOffice.ts       # Office environment (desks, rooms)
+│   ├── lib/db/                 # drizzle-orm schema + SQLite client
+│   ├── stores/                 # Zustand stores (agents, auth, ui)
+│   └── middleware.ts           # Rate limiting + auth middleware
+└── package.json
 ```
 
 ---
 
-## Links
+## 🎨 Customization
 
-| Resource | URL |
-|----------|-----|
-| OpenClaw | https://openclaw.ai |
-| OpenClaw Docs | https://docs.openclaw.ai |
-| Next.js | https://nextjs.org |
-| Pixi.js | https://pixijs.com |
+### Change the emoji / agent appearance
+Edit `src/components/office/drawAgent.ts` — each agent ID maps to a color scheme and pixel sprite style.
 
----
+### Add more desk positions
+Edit `DESK_POSITIONS` in `src/components/office/drawOffice.ts`.
 
-## License
-
-MIT © 2026
+### Change the port
+Update `PORT` in `.env.local`, the systemd service file, and nginx `proxy_pass`.
 
 ---
 
-<div align="center">
+## 📄 License
 
-Made with ❤️ for the OpenClaw community
+MIT — free to use, modify, and deploy.
 
-**[⭐ Star this repo](https://github.com/SC32br/openclaw-skill-pixel-office)** if it helped you!
+---
 
-</div>
+*Part of the [OpenClaw](https://openclaw.io) skills ecosystem.*
