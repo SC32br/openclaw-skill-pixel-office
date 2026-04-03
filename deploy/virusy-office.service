@@ -1,0 +1,18 @@
+[Unit]
+Description=Вируся AI Office Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=openclaw
+WorkingDirectory=/home/openclaw/agents-workspace/virusy-office
+ExecStart=/home/openclaw/.nvm/versions/node/v22.22.2/bin/node node_modules/.bin/next start -p 3001
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+Environment=PORT=3001
+Environment=OPENCLAW_GATEWAY_URL=http://localhost:18789
+Environment=OPENCLAW_TOKEN=your_gateway_token_here
+
+[Install]
+WantedBy=multi-user.target
