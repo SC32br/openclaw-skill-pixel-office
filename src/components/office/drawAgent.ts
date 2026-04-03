@@ -1,8 +1,6 @@
 import { Graphics, Container, Text, TextStyle } from "pixi.js";
 
-export type AgentId = "debosh-main" | "debosh-marketer" | "debosh-copywriter" | "debosh-poster"
-  | "debosh-storymaker" | "debosh-analyst" | "debosh-targetologist"
-  | "debosh-stats" | "carousel-maker" | "debosh-video";
+export type AgentId = string;
 
 export interface AgentColors {
   skin: number;
@@ -13,88 +11,45 @@ export interface AgentColors {
   accessory: number;
 }
 
-const AGENT_PALETTES: Record<AgentId, AgentColors> = {
-  "debosh-main": {
-    skin: 0xf5c6a0,
-    hair: 0x2d3436,
-    shirt: 0xe74c3c,  // красная
-    pants: 0x1a1a2e,
-    shoes: 0x111122,
-    accessory: 0xe74c3c,
-  },
-  "debosh-marketer": {
-    skin: 0xf5c6a0,
-    hair: 0x4a3728,
-    shirt: 0x3498db,  // синяя
-    pants: 0x1a1a2e,
-    shoes: 0x111122,
-    accessory: 0x3498db,
-  },
-  "debosh-copywriter": {
-    skin: 0xf0d5b8,
-    hair: 0x4a3728,
-    shirt: 0xe67e22,  // оранжевая
-    pants: 0x2d3436,
-    shoes: 0x2d3436,
-    accessory: 0xe67e22,
-  },
-  "debosh-poster": {
-    skin: 0xf0d5b8,
-    hair: 0x2d3436,
-    shirt: 0x27ae60,  // зелёная
-    pants: 0x1a1a2e,
-    shoes: 0x111122,
-    accessory: 0x27ae60,
-  },
-  "debosh-storymaker": {
-    skin: 0xf5c6a0,
-    hair: 0x4a3728,
-    shirt: 0xe84393,  // розовая
-    pants: 0x1a1a2e,
-    shoes: 0x111122,
-    accessory: 0xe84393,
-  },
-  "debosh-analyst": {
-    skin: 0xf0d5b8,
-    hair: 0x2d3436,
-    shirt: 0x636e72,  // серая
-    pants: 0x2d3436,
-    shoes: 0x2d3436,
-    accessory: 0x636e72,
-  },
-  "debosh-targetologist": {
-    skin: 0xf5c6a0,
-    hair: 0x2d3436,
-    shirt: 0x00b894,  // бирюзовая
-    pants: 0x1a1a2e,
-    shoes: 0x111122,
-    accessory: 0x00b894,
-  },
-  "debosh-stats": {
-    skin: 0xf0d5b8,
-    hair: 0x4a3728,
-    shirt: 0x6c5ce7,  // фиолетовая
-    pants: 0x2d3436,
-    shoes: 0x2d3436,
-    accessory: 0xa29bfe,
-  },
-  "carousel-maker": {
-    skin: 0xf5c6a0,
-    hair: 0x4a3728,
-    shirt: 0xecb00a,  // золотая
-    pants: 0x1a1a2e,
-    shoes: 0x111122,
-    accessory: 0xecb00a,
-  },
-  "debosh-video": {
-    skin: 0xf0d5b8,
-    hair: 0x2d3436,
-    shirt: 0xe17055,  // оранжево-красная
-    pants: 0x1a1a2e,
-    shoes: 0x111122,
-    accessory: 0xfdcb6e,
-  },
-};
+// Universal color palettes — assigned by hash of agentId
+const AGENT_PALETTES: AgentColors[] = [
+  { skin: 0xf5c6a0, hair: 0x2d3436, shirt: 0xe74c3c, pants: 0x1a1a2e, shoes: 0x111122, accessory: 0xe74c3c },   // red
+  { skin: 0xf5c6a0, hair: 0x4a3728, shirt: 0x3498db, pants: 0x1a1a2e, shoes: 0x111122, accessory: 0x3498db },   // blue
+  { skin: 0xf0d5b8, hair: 0x4a3728, shirt: 0xe67e22, pants: 0x2d3436, shoes: 0x2d3436, accessory: 0xe67e22 },   // orange
+  { skin: 0xf0d5b8, hair: 0x2d3436, shirt: 0x27ae60, pants: 0x1a1a2e, shoes: 0x111122, accessory: 0x27ae60 },   // green
+  { skin: 0xf5c6a0, hair: 0x4a3728, shirt: 0xe84393, pants: 0x1a1a2e, shoes: 0x111122, accessory: 0xe84393 },   // pink
+  { skin: 0xf0d5b8, hair: 0x2d3436, shirt: 0x636e72, pants: 0x2d3436, shoes: 0x2d3436, accessory: 0x636e72 },   // grey
+  { skin: 0xf5c6a0, hair: 0x2d3436, shirt: 0x00b894, pants: 0x1a1a2e, shoes: 0x111122, accessory: 0x00b894 },   // teal
+  { skin: 0xf0d5b8, hair: 0x4a3728, shirt: 0x6c5ce7, pants: 0x2d3436, shoes: 0x2d3436, accessory: 0xa29bfe },   // purple
+  { skin: 0xf5c6a0, hair: 0x4a3728, shirt: 0xecb00a, pants: 0x1a1a2e, shoes: 0x111122, accessory: 0xecb00a },   // yellow/gold
+  { skin: 0xf0d5b8, hair: 0x2d3436, shirt: 0xe17055, pants: 0x1a1a2e, shoes: 0x111122, accessory: 0xfdcb6e },   // coral
+];
+
+// Accessory types cycling through roles
+const ACCESSORY_TYPES = [
+  "badge",     // 0 — crown/badge
+  "chart",     // 1 — bar chart
+  "pen",       // 2 — pen
+  "publish",   // 3 — send icon
+  "phone",     // 4 — phone/story
+  "glass",     // 5 — magnifying glass
+  "target",    // 6 — crosshair
+  "bars",      // 7 — chart bars
+  "slides",    // 8 — slides
+  "camera",    // 9 — camera
+];
+
+function hashAgentId(agentId: string): number {
+  return agentId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+}
+
+function getAgentColors(agentId: string): AgentColors {
+  return AGENT_PALETTES[hashAgentId(agentId) % AGENT_PALETTES.length];
+}
+
+function getAccessoryType(agentId: string): string {
+  return ACCESSORY_TYPES[hashAgentId(agentId) % ACCESSORY_TYPES.length];
+}
 
 const LABEL_STYLE = new TextStyle({
   fontFamily: '"Courier New", monospace',
@@ -113,7 +68,7 @@ const LABEL_STYLE = new TextStyle({
 export function createAgentSprite(agentId: AgentId): Container {
   const container = new Container();
   container.label = `agent-${agentId}`;
-  const colors = AGENT_PALETTES[agentId];
+  const colors = getAgentColors(agentId);
   const body = new Graphics();
 
   // Shadow
@@ -185,16 +140,18 @@ export function createAgentSprite(agentId: AgentId): Container {
 
 function drawAccessory(agentId: AgentId, colors: AgentColors): Graphics {
   const g = new Graphics();
-  switch (agentId) {
-    case "debosh-main":
+  const type = getAccessoryType(agentId);
+
+  switch (type) {
+    case "badge":
       // Crown / star badge
       g.rect(6, 14, 8, 6);
       g.fill(colors.accessory);
       g.rect(7, 15, 6, 4);
       g.fill(0xffffff);
       break;
-    case "debosh-marketer":
-      // Chart icon
+    case "chart":
+      // Bar chart icon
       g.rect(21, 13, 8, 8);
       g.fill(0x2d3436);
       g.rect(22, 18, 2, 3);
@@ -202,42 +159,42 @@ function drawAccessory(agentId: AgentId, colors: AgentColors): Graphics {
       g.rect(25, 16, 2, 5);
       g.fill(colors.accessory);
       break;
-    case "debosh-copywriter":
+    case "pen":
       // Pen
       g.rect(18, 12, 1, 8);
       g.fill(0xdfe6e9);
       g.rect(17, 11, 3, 2);
       g.fill(colors.accessory);
       break;
-    case "debosh-poster":
+    case "publish":
       // Send/publish icon
       g.rect(21, 13, 8, 6);
       g.fill(0x2d3436);
       g.rect(23, 14, 4, 4);
       g.fill(colors.accessory);
       break;
-    case "debosh-storymaker":
+    case "phone":
       // Phone/story icon
       g.rect(21, 12, 6, 10);
       g.fill(0x2d3436);
       g.rect(22, 13, 4, 7);
       g.fill(colors.accessory);
       break;
-    case "debosh-analyst":
+    case "glass":
       // Magnifying glass
       g.circle(22, 12, 4);
       g.stroke({ color: colors.accessory, width: 1.5 });
       g.rect(24, 15, 3, 3);
       g.fill(colors.accessory);
       break;
-    case "debosh-targetologist":
+    case "target":
       // Target/crosshair
       g.circle(22, 14, 4);
       g.stroke({ color: colors.accessory, width: 1.5 });
       g.circle(22, 14, 1);
       g.fill(colors.accessory);
       break;
-    case "debosh-stats":
+    case "bars":
       // Chart bars
       g.rect(21, 13, 8, 8);
       g.fill(0x2d3436);
@@ -246,7 +203,7 @@ function drawAccessory(agentId: AgentId, colors: AgentColors): Graphics {
       g.rect(25, 15, 2, 6);
       g.fill(colors.accessory);
       break;
-    case "carousel-maker":
+    case "slides":
       // Slides icon
       g.rect(21, 12, 8, 6);
       g.fill(0x2d3436);
@@ -257,7 +214,7 @@ function drawAccessory(agentId: AgentId, colors: AgentColors): Graphics {
       g.rect(24, 20, 4, 3);
       g.fill(colors.accessory);
       break;
-    case "debosh-video":
+    case "camera":
       // Camera
       g.rect(21, 13, 8, 6);
       g.fill(0x2d3436);
@@ -273,7 +230,7 @@ function drawAccessory(agentId: AgentId, colors: AgentColors): Graphics {
 export function createWalkingSprite(agentId: AgentId, frame: 0 | 1): Container {
   const container = new Container();
   container.label = `walk-${agentId}-${frame}`;
-  const colors = AGENT_PALETTES[agentId];
+  const colors = getAgentColors(agentId);
   const body = new Graphics();
 
   body.ellipse(10, 30, 8, 3);
@@ -355,7 +312,7 @@ export function createWalkingSprite(agentId: AgentId, frame: 0 | 1): Container {
 export function createStretchSprite(agentId: AgentId): Container {
   const container = new Container();
   container.label = `stretch-${agentId}`;
-  const colors = AGENT_PALETTES[agentId];
+  const colors = getAgentColors(agentId);
   const body = new Graphics();
 
   body.ellipse(10, 30, 8, 3);
@@ -402,7 +359,7 @@ export function createStretchSprite(agentId: AgentId): Container {
 export function createCoolerSprite(agentId: AgentId): Container {
   const container = new Container();
   container.label = `cooler-${agentId}`;
-  const colors = AGENT_PALETTES[agentId];
+  const colors = getAgentColors(agentId);
   const body = new Graphics();
 
   body.ellipse(10, 30, 8, 3);
