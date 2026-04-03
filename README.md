@@ -290,6 +290,89 @@ MIT — free to use, modify, and deploy.
 
 *Part of the [OpenClaw](https://openclaw.io) skills ecosystem.*
 
+
+
+---
+
+## OpenClaw Gateway API Contract
+
+All Gateway calls go through `src/lib/openclaw-gateway.ts`. Never call Gateway directly from UI or routes.
+
+### Endpoint
+
+```
+POST http://localhost:18789/tools/invoke
+Authorization: Bearer <OPENCLAW_TOKEN>
+Content-Type: application/json
+```
+
+### Request
+
+```json
+{ "tool": "sessions_list", "params": {} }
+```
+
+### Response — success
+
+```json
+{
+  "ok": true,
+  "result": {
+    "details": {
+      "count": 3,
+      "sessions": [
+        {
+          "key": "agent:main:my-agent",
+          "kind": "other",
+          "channel": "unknown",
+          "displayName": "my-agent",
+          "status": "working",
+          "contextTokens": 45000,
+          "totalTokens": 120000,
+          "estimatedCostUsd": 0.012,
+          "updatedAt": 1743000000000
+        }
+      ]
+    }
+  }
+}
+```
+
+### Session key format
+
+```
+agent : main : <label>
+  │       │       └─ agent label (used as agent ID on the map)
+  │       └─ agent group (always "main" for primary agents)
+  └─ prefix (always "agent")
+```
+
+### Error responses
+
+| HTTP | Meaning | Pixel Office action |
+|------|---------|-------------------|
+| 401 | Token invalid or missing | Show "token missing" message |
+| 429 | Rate limited | Show retry countdown, do not retry immediately |
+| 503+ | Gateway down | Show empty office + "Gateway unreachable" |
+| `ok: false` | Tool-level error | Log message, return empty list |
+
+### What to filter from sessions
+
+| Condition | Reason |
+|-----------|--------|
+| `key` does not start with `agent:` | System or internal session |
+| `key` contains `:subagent:` | Spawned sub-agent, not a main agent |
+| `displayName === "heartbeat"` | Periodic health-check session |
+
+### Logging (structured, no token leakage)
+
+The adapter logs:
+- `[gateway] unreachable: <message>` — connection error
+- `[gateway] 401 Unauthorized` — bad token (token value never logged)
+- `[gateway] 429 Rate limited` — with retry-after if available
+- `[gateway] HTTP <status>: <first 200 chars of body>` — unexpected errors
+- `[gateway] unknown top-level field: "<field>"` — forward-compat warning
+
 ---
 
 ## Troubleshooting
