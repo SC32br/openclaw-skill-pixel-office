@@ -289,3 +289,127 @@ MIT — free to use, modify, and deploy.
 ---
 
 *Part of the [OpenClaw](https://openclaw.io) skills ecosystem.*
+
+---
+
+## Troubleshooting
+
+### 🔴 Empty office — no agents on the map
+
+**Check 1 — Token set?**
+```bash
+grep OPENCLAW_TOKEN .env.local
+# Must not be empty
+```
+
+**Check 2 — Gateway running?**
+```bash
+curl -s http://localhost:18789/tools/invoke \
+  -X POST -H "Authorization: Bearer $OPENCLAW_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"tool":"sessions_list","params":{}}' | jq .
+```
+Expected: `{"ok":true,"result":{"details":{"sessions":[...]}}}`
+
+**Check 3 — Are agents active?**
+Sessions only appear while agents are running. Start your OpenClaw agents, then refresh.
+
+---
+
+### 🔴 Gateway 404 on old paths
+
+**Symptom:** `curl http://localhost:18789/api/v1/sessions/list` → 404
+
+**Cause:** This path does not exist in OpenClaw Gateway.
+
+**Fix:** Pixel Office uses `POST /tools/invoke` with `tool: "sessions_list"` — see `src/lib/openclaw-gateway.ts`.
+Never call `/api/v1/*` directly.
+
+---
+
+### 🔴 White screen / Pixi.js fails to load
+
+**Cause:** `/_next/static/*.js` chunks routed to gateway (port 18789) instead of Next.js (port 3001).
+
+**Fix:** Add this nginx block **before** your `/office/` location:
+```nginx
+location ^~ /_next/ {
+    auth_basic "Pixel Office";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+    proxy_pass http://127.0.0.1:3001;
+}
+```
+Full config: see `deploy/nginx-location.conf`.
+
+---
+
+### 🔴 0 agents shown — `/api/agents` returns 401
+
+**Cause:** `auth_basic` applied to `/api/` location — browser XHR does not send Basic Auth credentials.
+
+**Fix:** Remove `auth_basic` from `location ^~ /api/` — Next.js middleware handles auth internally.
+
+---
+
+### 🔴 Service fails to start — `node: command not found`
+
+**Cause:** `/usr/bin/node` missing or old version when using nvm.
+
+**Fix:** Check your node path and update the service:
+```bash
+which node   # e.g. /home/openclaw/.nvm/versions/node/v22.x.x/bin/node
+```
+Then edit `deploy/pixel-office.service` — `ExecStart` uses `$(which node)` by default.
+After editing: `sudo systemctl daemon-reload && sudo systemctl restart pixel-office`
+
+---
+
+### 🔴 `db:push` fails — missing drizzle.config.ts
+
+```bash
+# Verify the file exists
+ls drizzle.config.ts
+
+# Run push
+npm run db:push
+
+# Verify tables created
+sqlite3 data/office.db ".tables"
+```
+
+---
+
+### 🟡 Gateway 429 — rate limited
+
+The adapter backs off automatically and returns an error message to the UI.
+Check your OpenClaw agent loop frequency — avoid polling faster than every 5 seconds.
+
+---
+
+### 🟡 Node version error during `npm install`
+
+```
+error: @tailwindcss/oxide requires Node 20+
+```
+
+```bash
+node --version        # check current
+nvm install 22        # install Node 22 LTS
+nvm use 22
+npm install           # retry
+```
+
+---
+
+### Smoke test after deploy
+
+```bash
+# 1. API responds (no nginx auth on /api/)
+curl -s http://localhost:3001/api/agents | jq .
+
+# 2. Through nginx
+curl -s -u office:your_password https://yourdomain.com/api/agents | jq .
+
+# 3. Gateway integration
+curl -s http://localhost:3001/api/openclaw/sessions | jq .agents
+```
