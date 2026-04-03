@@ -37,19 +37,27 @@ export interface DeskPosition {
   y: number;
 }
 
-// 10 agents desk positions
-export const DESK_POSITIONS: Record<string, DeskPosition> = {
-  "debosh-main":          { x: 150, y: 200 },
-  "debosh-marketer":      { x: 350, y: 200 },
-  "debosh-copywriter":    { x: 550, y: 200 },
-  "debosh-poster":        { x: 750, y: 200 },
-  "debosh-storymaker":    { x: 150, y: 370 },
-  "debosh-analyst":       { x: 350, y: 370 },
-  "debosh-targetologist": { x: 550, y: 370 },
-  "debosh-stats":         { x: 750, y: 370 },
-  "carousel-maker":       { x: 250, y: 520 },
-  "debosh-video":         { x: 450, y: 520 },
-};
+// Fixed desk grid — supports up to 12 agents
+// Assign positions dynamically from agent list order
+export const DESK_GRID: Array<{ x: number; y: number }> = [
+  { x: 150, y: 200 }, { x: 350, y: 200 }, { x: 550, y: 200 }, { x: 750, y: 200 },
+  { x: 150, y: 370 }, { x: 350, y: 370 }, { x: 550, y: 370 }, { x: 750, y: 370 },
+  { x: 250, y: 520 }, { x: 450, y: 520 }, { x: 650, y: 520 }, { x: 850, y: 520 },
+];
+
+// Build DESK_POSITIONS dynamically from an ordered list of agent IDs
+export function buildDeskPositions(agentIds: string[]): Record<string, DeskPosition> {
+  const result: Record<string, DeskPosition> = {};
+  agentIds.forEach((id, i) => {
+    if (i < DESK_GRID.length) {
+      result[id] = DESK_GRID[i];
+    }
+  });
+  return result;
+}
+
+// Mutable global — populated at runtime via buildDeskPositions
+export let DESK_POSITIONS: Record<string, DeskPosition> = {};
 
 export const MEETING_SEATS: { x: number; y: number }[] = [
   { x: -40, y: -100 },
@@ -68,13 +76,13 @@ export function createOfficeEnvironment(width: number, height: number): Containe
   office.addChild(drawWalls(width, height));
   office.addChild(drawDecorations(width, height));
 
-  // All 11 desks
+  // Draw desks for all currently known positions
   for (const [id, pos] of Object.entries(DESK_POSITIONS)) {
+    const idx = Object.keys(DESK_POSITIONS).indexOf(id);
     const deskType: DeskType =
-      id === "debosh-main" ? "coordinator" :
-      id === "debosh-marketer" || id === "debosh-analyst" || id === "debosh-stats" || id === "debosh-targetologist" ? "analyst" :
-      id === "debosh-copywriter" || id === "debosh-storymaker" ? "writer" :
-      "producer";
+      idx === 0 ? "coordinator" :
+      idx % 4 === 1 || idx % 4 === 2 ? "analyst" :
+      idx % 2 === 0 ? "writer" : "producer";
     office.addChild(drawDesk(pos.x, pos.y, deskType));
   }
 
@@ -87,49 +95,6 @@ export function createOfficeEnvironment(width: number, height: number): Containe
   office.addChild(drawAmbientLights());
 
   return office;
-}
-
-function drawZoneDivider(x: number, yStart: number, height: number): Container {
-  const container = new Container();
-  container.label = "zone-divider";
-  const g = new Graphics();
-
-  // Dotted vertical line
-  for (let y = yStart; y < yStart + height; y += 12) {
-    g.rect(x, y, 2, 6);
-    g.fill({ color: 0x444444, alpha: 0.5 });
-  }
-
-  // "Pixel Office" label (left zone)
-  const labelStyleLeft = new TextStyle({
-    fontFamily: '"Courier New", monospace',
-    fontSize: 11,
-    fontWeight: "bold",
-    fill: 0xecb00a,
-    align: "center",
-  });
-  const virusyLabel = new Text({ text: "🐱 Pixel Office", style: labelStyleLeft });
-  virusyLabel.anchor.set(1, 0.5);
-  virusyLabel.x = x - 8;
-  virusyLabel.y = yStart + 12;
-  container.addChild(virusyLabel);
-
-  // "DeBosH" label (right zone)
-  const labelStyleRight = new TextStyle({
-    fontFamily: '"Courier New", monospace',
-    fontSize: 11,
-    fontWeight: "bold",
-    fill: 0xe74c3c,
-    align: "center",
-  });
-  const deboshLabel = new Text({ text: "🔥 DeBosH", style: labelStyleRight });
-  deboshLabel.anchor.set(0, 0.5);
-  deboshLabel.x = x + 8;
-  deboshLabel.y = yStart + 12;
-  container.addChild(deboshLabel);
-
-  container.addChild(g);
-  return container;
 }
 
 function drawFloor(w: number, h: number): Graphics {
@@ -258,8 +223,8 @@ function drawDecorations(w: number, h: number): Graphics {
   drawMediumPlant(g, 140, 14);        // windowsill left
   drawMediumPlant(g, 580, 14);        // windowsill center
   drawMediumPlant(g, 900, 14);        // windowsill right
-  drawMediumPlant(g, 240, 490);       // between virusy desks
-  drawMediumPlant(g, 790, 490);       // between debosh desks
+  drawMediumPlant(g, 240, 490);       // between desks row 2
+  drawMediumPlant(g, 790, 490);       // between desks row 2
 
   // Bookshelf on right wall
   g.rect(w - 55, 70, 45, 80);
@@ -292,7 +257,7 @@ function drawDecorations(w: number, h: number): Graphics {
   g.fill(0x2a2a2a);
   g.rect(202, 10, 46, 34);
   g.fill(0x1a1a2e);
-  // "⚡" lightning bolt design
+  // lightning bolt design
   g.rect(216, 16, 4, 8);
   g.fill(ACCENT);
   g.rect(220, 22, 4, 8);
