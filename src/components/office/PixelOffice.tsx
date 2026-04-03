@@ -10,7 +10,7 @@ import {
   createCoolerSprite,
   type AgentId,
 } from "./drawAgent";
-import { createOfficeEnvironment, buildDeskPositions, DESK_POSITIONS, WATER_COOLER_POS, COFFEE_MACHINE_POS, MEETING_TABLE_POS, MEETING_SEATS, GAMING_AREA_POS } from "./drawOffice";
+import { createOfficeEnvironment, DESK_POSITIONS, buildDeskPositions, WATER_COOLER_POS, COFFEE_MACHINE_POS, MEETING_TABLE_POS, MEETING_SEATS, GAMING_AREA_POS } from "./drawOffice";
 import type { Agent, AgentStatus } from "@/lib/utils/types";
 
 interface PixelOfficeProps {
@@ -92,12 +92,11 @@ const CHAT_BUBBLE_STYLE = new TextStyle({
   fill: 0xffffff,
 });
 
-// Derive display name from agent metadata or id
+// Get display name from agent data or derive from agent ID
 function getAgentDisplayName(agent: Agent): string {
-  // Use agent.name if available
   if ((agent as any).name) return (agent as any).name;
-  // Otherwise derive from last segment of id
-  const parts = agent.id.split("-");
+  // Derive from id: "my-cool-agent" → "Cool agent"
+  const parts = agent.id.split('-');
   const last = parts[parts.length - 1];
   return last.charAt(0).toUpperCase() + last.slice(1);
 }
@@ -227,6 +226,7 @@ export const PixelOffice = forwardRef<PixelOfficeHandle, PixelOfficeProps>(
           rafId = requestAnimationFrame(animate);
         } catch (err) {
           console.error("Pixi init failed:", err);
+          // Показываем ошибку на экране
           if (el) {
             el.innerHTML = `<div style="color:#ff6b6b;padding:20px;font-family:monospace;font-size:12px;background:#1a1a2e;border:1px solid #ff6b6b;border-radius:4px;margin:20px">
               <b>⚠️ Pixi.js init error:</b><br>${String(err)}<br><br>
@@ -255,13 +255,11 @@ export const PixelOffice = forwardRef<PixelOfficeHandle, PixelOfficeProps>(
         ) as Container | undefined;
         if (!agentsLayer) return;
 
-        // Build desk positions dynamically from current agent list
-        const positions = buildDeskPositions(agentList.map((a) => a.id));
-        // Mutate the exported DESK_POSITIONS so drawOffice ambient lights stay in sync
-        Object.keys(DESK_POSITIONS).forEach((k) => delete DESK_POSITIONS[k]);
-        Object.assign(DESK_POSITIONS, positions);
-
         const validIds = new Set(agentList.map((a) => a.id));
+
+        // Build desk positions dynamically from current agent list
+        const currentPositions = buildDeskPositions(agentList.map(a => a.id));
+        Object.assign(DESK_POSITIONS, currentPositions);
 
         for (const [id, node] of nodesRef.current) {
           if (!validIds.has(id)) {
@@ -277,9 +275,7 @@ export const PixelOffice = forwardRef<PixelOfficeHandle, PixelOfficeProps>(
           let node = nodesRef.current.get(agent.id);
 
           if (!node) {
-            node = createAgentNode(agent.id as AgentId, pos.x, pos.y, onAgentClick);
-            // Update label with the display name derived from agent metadata
-            node.label.text = getAgentDisplayName(agent);
+            node = createAgentNode(agent.id as AgentId, pos.x, pos.y, onAgentClick, getAgentDisplayName(agent));
             nodesRef.current.set(agent.id, node);
             agentsLayer.addChild(node.container);
             const initStatus = (agent.currentStatus || "idle") as AgentStatus;
@@ -348,6 +344,7 @@ function createAgentNode(
   x: number,
   y: number,
   onClick?: (id: string) => void,
+  displayName?: string,
 ): AgentNode {
   const container = new Container();
   container.label = `agent-node-${agentId}`;
@@ -385,8 +382,7 @@ function createAgentNode(
   coolerSprite.visible = false;
   container.addChild(coolerSprite);
 
-  // Label placeholder — overwritten in syncAgents with getAgentDisplayName
-  const label = createAgentLabel(agentId);
+  const label = createAgentLabel(displayName || agentId);
   label.y = -50;
   label.scale.set(0.5);
   container.addChild(label);
@@ -757,7 +753,8 @@ function animateAgent(node: AgentNode, dt: number) {
     return;
   }
 
-  switch (node.apiStatus) {    case "idle":
+  switch (node.apiStatus) {
+    case "idle":
       node.sprite.y = -10 + Math.sin(t * 1.5) * 0.8;
       break;
     case "working":
