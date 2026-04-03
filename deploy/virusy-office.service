@@ -1,11 +1,11 @@
 [Unit]
-Description=Вируся AI Office Dashboard
+Description=Pixel Office AI Dashboard
 After=network.target
 
 [Service]
 Type=simple
 User=openclaw
-WorkingDirectory=/home/openclaw/agents-workspace/virusy-office
+WorkingDirectory=/home/openclaw/agents-workspace/pixel-office
 ExecStart=/home/openclaw/.nvm/versions/node/v22.22.2/bin/node node_modules/.bin/next start -p 3001
 Restart=always
 RestartSec=5
