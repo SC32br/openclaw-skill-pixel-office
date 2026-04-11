@@ -122,8 +122,9 @@ Browser
                           ├── /office/stream  → PixelOffice canvas (Pixi.js v8)
                           ├── /api/agents     → SQLite via drizzle-orm
                           ├── /api/activity/feed
-                          └── /api/openclaw/stats → OpenClaw Gateway
-                                                     (optional, for token stats)
+                          ├── /api/openclaw/stats → Gateway /api/v1/stats, else sessions, else JSONL
+                          └── /api/openclaw/cost-report → local session *.jsonl under ~/.openclaw/agents
+                          /office/costs → detailed cost breakdown (same JSONL source)
 ```
 
 **Stack:**
@@ -134,7 +135,7 @@ Browser
 | Database | SQLite (better-sqlite3 + drizzle-orm) |
 | Auth | nginx HTTP Basic Auth |
 | Process | systemd |
-| Runtime | Node.js 18+ |
+| Runtime | Node.js 20+ |
 
 ---
 
@@ -155,6 +156,10 @@ DATABASE_URL=/home/openclaw/agents-workspace/pixel-office/data/office.db
 ```
 
 After changes: `sudo systemctl restart pixel-office`
+
+### Cost report (`/office/costs`)
+
+Token and USD totals in the header and on the costs page are aggregated from local OpenClaw session logs (`*.jsonl` under each agent folder). By default the app reads `~/.openclaw/agents` (or set `OPENCLAW_AGENTS_DIR` / `OPENCLAW_HOME` — see `.env.example`). Optional `OPENCLAW_COST_*_PER_M` env vars tune USD estimates when logs have tokens but no `usage.cost`.
 
 ### Adding Your Agents
 

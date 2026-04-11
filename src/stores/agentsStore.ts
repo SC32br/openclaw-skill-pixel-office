@@ -2,10 +2,15 @@
 
 import { create } from "zustand";
 import type { Agent } from "@/lib/utils/types";
+import { normalizeCostReport } from "@/lib/normalizeCostReport";
 
 interface AgentsState {
   agents: Agent[];
+  /** Per-agent USD — same rules as «By agents» on /office/costs (JSONL). */
   costs: Record<string, number>;
+  /** All-time totals — same as report.totals on costs page (range=all). */
+  totalsTokens: number;
+  totalsCostUsd: number;
   isLoading: boolean;
   fetchAgents: () => Promise<void>;
   fetchLiveStatus: () => Promise<void>;
@@ -15,6 +20,8 @@ interface AgentsState {
 export const useAgentsStore = create<AgentsState>((set, get) => ({
   agents: [],
   costs: {},
+  totalsTokens: 0,
+  totalsCostUsd: 0,
   isLoading: false,
 
   fetchAgents: async () => {
@@ -61,19 +68,19 @@ export const useAgentsStore = create<AgentsState>((set, get) => ({
 
   fetchCosts: async () => {
     try {
-      const res = await fetch("/api/openclaw/stats");
+      const res = await fetch(`/api/openclaw/cost-report?range=all&t=${Date.now()}`);
       if (!res.ok) return;
-      const data = await res.json();
-      const perAgent = data.perAgent || {};
-      const inputPrice = data.pricing?.input || 5;
-      const outputPrice = data.pricing?.output || 25;
+      const raw: unknown = await res.json();
+      const report = normalizeCostReport(raw);
       const costMap: Record<string, number> = {};
-      for (const [key, stats] of Object.entries(perAgent) as [string, any][]) {
-        if (stats) {
-          costMap[key] = Math.round(((stats.inputTokens / 1e6) * inputPrice + (stats.outputTokens / 1e6) * outputPrice) * 100) / 100;
-        }
+      for (const [id, bucket] of Object.entries(report.byAgent)) {
+        costMap[id] = bucket.costUsd;
       }
-      set({ costs: costMap });
+      set({
+        costs: costMap,
+        totalsTokens: report.totals.tokens,
+        totalsCostUsd: report.totals.costUsd,
+      });
     } catch {}
   },
 }));

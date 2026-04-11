@@ -24,7 +24,7 @@ User says something like:
 
 ```bash
 # Check required tools
-node --version   # need v18+
+node --version   # need v20+
 npm --version
 nginx -v
 git --version
@@ -51,7 +51,7 @@ npm install
 npm run build
 ```
 
-> Build takes 1–3 minutes. If it fails, check Node version (`node --version` must be ≥18).
+> Build takes 1–3 minutes. If it fails, check Node version (`node --version` must be ≥20).
 
 ---
 
@@ -229,7 +229,7 @@ Change `PORT=3001` in `.env.local` and update the service file + nginx `proxy_pa
 
 ### Build fails
 ```bash
-node --version  # must be ≥ 18
+node --version  # must be ≥ 20
 cd ~/agents-workspace/pixel-office
 npm install
 npm run build 2>&1 | tail -30

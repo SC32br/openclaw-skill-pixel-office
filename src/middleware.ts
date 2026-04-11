@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_PATHS = [
   "/office/stream",
+  "/office/costs",
   "/stream",
   "/overlay",
   "/auth/login",
   "/api/auth/login",
   "/api/openclaw/sessions",
   "/api/openclaw/stats",
+  "/api/openclaw/cost-report",
   "/api/agents",
   "/api/activity/feed",
   "/favicon.svg",
@@ -65,5 +67,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.svg).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon\\.svg|favicon\\.ico).*)"],
 };
