@@ -4,12 +4,13 @@ After=network.target
 
 [Service]
 Type=simple
-User=openclaw
-WorkingDirectory=/home/openclaw/agents-workspace/pixel-office
+# Replace with your deployment user (e.g. the account that owns the clone)
+User=YOUR_LINUX_USER
+WorkingDirectory=/home/YOUR_LINUX_USER/agents-workspace/pixel-office
 
 # ⚠️  Do NOT use /usr/bin/node — it may be old or missing.
 # Find your node path: which node
-# nvm users typically: /home/openclaw/.nvm/versions/node/v22.x.x/bin/node
+# nvm example: /home/YOUR_LINUX_USER/.nvm/versions/node/v22.x.x/bin/node
 ExecStart=/bin/bash -c 'exec $(which node) node_modules/.bin/next start -p 3001'
 
 Restart=on-failure
@@ -17,7 +18,7 @@ RestartSec=5
 Environment=NODE_ENV=production
 Environment=PORT=3001
 # Copy .env.example → .env.local, fill in values, then point here:
-EnvironmentFile=/home/openclaw/agents-workspace/pixel-office/.env.local
+EnvironmentFile=/home/YOUR_LINUX_USER/agents-workspace/pixel-office/.env.local
 
 [Install]
 WantedBy=multi-user.target

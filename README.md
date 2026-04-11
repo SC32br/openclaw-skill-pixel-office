@@ -151,8 +151,8 @@ PORT=3001
 OPENCLAW_GATEWAY_URL=http://localhost:18789
 OPENCLAW_TOKEN=your_openclaw_token
 
-# SQLite database
-DATABASE_URL=/home/openclaw/agents-workspace/pixel-office/data/office.db
+# SQLite database (absolute path recommended in production)
+DATABASE_URL=/home/YOUR_LINUX_USER/agents-workspace/pixel-office/data/office.db
 ```
 
 After changes: `sudo systemctl restart pixel-office`
@@ -280,7 +280,7 @@ pixel-office/
 Edit `src/components/office/drawAgent.ts` — each agent ID maps to a color scheme and pixel sprite style.
 
 ### Add more desk positions
-Edit `DESK_POSITIONS` in `src/components/office/drawOffice.ts`.
+Edit `DESK_GRID` / `buildDeskPositions()` in `src/components/office/drawOffice.ts` (see `PixelOffice.tsx` for how positions bind to agents).
 
 ### Change the port
 Update `PORT` in `.env.local`, the systemd service file, and nginx `proxy_pass`.
@@ -431,6 +431,14 @@ Full config: see `deploy/nginx-location.conf`.
 
 ---
 
+### 🔴 `/office/costs` 404 behind nginx
+
+**Cause:** An old config used `rewrite ^/office/(.*)$ /$1 break;`, which turned `/office/costs` into `/costs` — but the app only serves `/office/costs`.
+
+**Fix:** Remove that `rewrite` and proxy `/office/` to Next.js with the path unchanged (see current `deploy/nginx-location.conf`).
+
+---
+
 ### 🔴 0 agents shown — `/api/agents` returns 401
 
 **Cause:** `auth_basic` applied to `/api/` location — browser XHR does not send Basic Auth credentials.
@@ -445,7 +453,7 @@ Full config: see `deploy/nginx-location.conf`.
 
 **Fix:** Check your node path and update the service:
 ```bash
-which node   # e.g. /home/openclaw/.nvm/versions/node/v22.x.x/bin/node
+which node   # e.g. ~/.nvm/versions/node/v22.x.x/bin/node
 ```
 Then edit `deploy/pixel-office.service` — `ExecStart` uses `$(which node)` by default.
 After editing: `sudo systemctl daemon-reload && sudo systemctl restart pixel-office`

@@ -112,11 +112,11 @@ function drawZoneDivider(x: number, yStart: number, height: number): Container {
     fill: 0xecb00a,
     align: "center",
   });
-  const virusyLabel = new Text({ text: "🐱 Pixel Office", style: labelStyleLeft });
-  virusyLabel.anchor.set(1, 0.5);
-  virusyLabel.x = x - 8;
-  virusyLabel.y = yStart + 12;
-  container.addChild(virusyLabel);
+  const leftZoneLabel = new Text({ text: "🐱 Pixel Office", style: labelStyleLeft });
+  leftZoneLabel.anchor.set(1, 0.5);
+  leftZoneLabel.x = x - 8;
+  leftZoneLabel.y = yStart + 12;
+  container.addChild(leftZoneLabel);
 
   // Right zone label
   const labelStyleRight = new TextStyle({
@@ -262,7 +262,7 @@ function drawDecorations(w: number, h: number): Graphics {
   drawMediumPlant(g, 140, 14);        // windowsill left
   drawMediumPlant(g, 580, 14);        // windowsill center
   drawMediumPlant(g, 900, 14);        // windowsill right
-  drawMediumPlant(g, 240, 490);       // between virusy desks
+  drawMediumPlant(g, 240, 490);       // between desk rows
   drawMediumPlant(g, 790, 490);       // between desks
 
   // Bookshelf on right wall

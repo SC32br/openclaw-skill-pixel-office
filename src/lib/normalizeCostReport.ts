@@ -103,7 +103,7 @@ export function normalizeCostReport(raw: unknown): CostReportPayload {
         serviceExpensesRaw = [
           {
             id: "heartbeat",
-            label: "Heartbeat (ответ с HEARTBEAT*)",
+            label: "Heartbeat (HEARTBEAT* in assistant reply)",
             requests: rows,
             tokens: tok,
             costUsd: usd,

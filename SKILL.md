@@ -110,12 +110,12 @@ After=network.target
 
 [Service]
 Type=simple
-User=openclaw
-WorkingDirectory=/home/openclaw/agents-workspace/pixel-office
-ExecStart=/usr/bin/node node_modules/.bin/next start -p 3001
+User=YOUR_LINUX_USER
+WorkingDirectory=/home/YOUR_LINUX_USER/agents-workspace/pixel-office
+ExecStart=/bin/bash -c 'exec $(which node) node_modules/.bin/next start -p 3001'
 Restart=on-failure
 RestartSec=5
-EnvironmentFile=/home/openclaw/agents-workspace/pixel-office/.env.local
+EnvironmentFile=/home/YOUR_LINUX_USER/agents-workspace/pixel-office/.env.local
 
 [Install]
 WantedBy=multi-user.target
@@ -163,7 +163,6 @@ location ^~ /api/ {
 location ^~ /office/ {
     auth_basic "Pixel Office";
     auth_basic_user_file /etc/nginx/.htpasswd;
-    rewrite ^/office/(.*)$ /$1 break;
     proxy_pass http://127.0.0.1:3001;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;

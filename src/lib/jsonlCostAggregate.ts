@@ -36,8 +36,8 @@ export function rangeToFromMs(range: RangeParam): number {
 export type ServiceExpenseKind = "heartbeat" | "silent_no_reply";
 
 export const SERVICE_EXPENSE_LABELS: Record<ServiceExpenseKind, string> = {
-  heartbeat: "Heartbeat (ответ с HEARTBEAT*)",
-  silent_no_reply: "Тихий ответ (NO_REPLY)",
+  heartbeat: "Heartbeat (HEARTBEAT* in assistant reply)",
+  silent_no_reply: "Silent reply (NO_REPLY)",
 };
 
 interface UsageRow {
