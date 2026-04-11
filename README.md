@@ -8,6 +8,27 @@
 **Live pixel-art office dashboard for your OpenClaw AI agents.**  
 Each agent appears as an animated pixel character — walking, stretching, meeting, going to the water cooler — with real-time status and an activity feed.
 
+## Screenshots
+
+<p align="center">
+  <a href="docs/screenshots/office-stream.png" title="Open full size">
+    <img src="docs/screenshots/office-stream.png" alt="Pixel Office — live dashboard: Pixi canvas, agent sidebar, token and cost strip, CRT toggle" width="920" />
+  </a>
+</p>
+<p align="center"><strong>Live office</strong> — <em>Pixi.js scene · agent roster · all-time tokens &amp; USD · Costs link · CRT overlay</em></p>
+<br/>
+<p align="center">
+  <a href="docs/screenshots/office-costs.png" title="Open full size">
+    <img src="docs/screenshots/office-costs.png" alt="Pixel Office — session cost report with ranges and tables" width="920" />
+  </a>
+</p>
+<p align="center"><strong>Cost report</strong> — <em>time ranges · totals from local session logs · per-agent &amp; per-provider breakdown</em></p>
+
+<p align="center"><sub>Captured from a local dev build (empty agent DB in this shot — connect OpenClaw to see live characters and feed).</sub></p>
+
+<details>
+<summary><strong>ASCII wireframe</strong> (concept)</summary>
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  🤖 Pixel Office                                    [LIVE] ●    │
@@ -29,6 +50,8 @@ Each agent appears as an animated pixel character — walking, stretching, meeti
 │  [LIVE ●]           [🤝 Gather All]  │                          │
 └──────────────────────────────────────┴──────────────────────────┘
 ```
+
+</details>
 
 ---
 
