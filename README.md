@@ -10,21 +10,21 @@ Each agent appears as an animated pixel character — walking, stretching, meeti
 
 ## Screenshots
 
-<p align="center">
-  <a href="docs/screenshots/office-stream.png" title="Open full size">
-    <img src="docs/screenshots/office-stream.png" alt="Pixel Office — live dashboard: Pixi canvas, agent sidebar, token and cost strip, CRT toggle" width="920" />
-  </a>
-</p>
-<p align="center"><strong>Live office</strong> — <em>Pixi.js scene · agent roster · all-time tokens &amp; USD · Costs link · CRT overlay</em></p>
-<br/>
-<p align="center">
-  <a href="docs/screenshots/office-costs.png" title="Open full size">
-    <img src="docs/screenshots/office-costs.png" alt="Pixel Office — session cost report with ranges and tables" width="920" />
-  </a>
-</p>
-<p align="center"><strong>Cost report</strong> — <em>time ranges · totals from local session logs · per-agent &amp; per-provider breakdown</em></p>
+Files in repo: [`docs/screenshots/`](docs/screenshots/) — on GitHub: [folder `docs/screenshots`](https://github.com/SC32br/openclaw-skill-pixel-office/tree/main/docs/screenshots) (PNG are versioned; **push** your clone so they appear on github.com).
 
-<p align="center"><sub>Captured from a local dev build (empty agent DB in this shot — connect OpenClaw to see live characters and feed).</sub></p>
+### Live office (`/office/stream`)
+
+![Pixel Office — live dashboard: Pixi canvas, sidebar, token strip](docs/screenshots/office-stream.png)
+
+**Live office** — Pixi.js scene, agent roster, all-time tokens & USD, link to **Costs**, CRT overlay.
+
+### Cost report (`/office/costs`)
+
+![Pixel Office — session cost report](docs/screenshots/office-costs.png)
+
+**Cost report** — time ranges, totals from local `*.jsonl` logs, per-agent and per-provider tables.
+
+*Captured from a local dev build (empty agent DB in these shots — connect OpenClaw to see live characters and feed).*
 
 <details>
 <summary><strong>ASCII wireframe</strong> (concept)</summary>
