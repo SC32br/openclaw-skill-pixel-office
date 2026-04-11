@@ -7,12 +7,16 @@
 
 ## Publishing to GitHub
 
-These PNGs are tracked in git. If they do not appear on [the repo](https://github.com/SC32br/openclaw-skill-pixel-office/tree/main/docs/screenshots), your local branch needs a push:
+These PNGs are tracked in git. They **do not** show on GitHub until someone runs:
 
 ```bash
 git status   # e.g. "ahead of origin/main"
 git push origin main
 ```
+
+After a successful push, the folder will be at  
+`https://github.com/SC32br/openclaw-skill-pixel-office/tree/main/docs/screenshots`  
+(if that URL 404s, `main` on GitHub does not have these files yet — compare with `git log origin/main..HEAD`).
 
 ## Refreshing captures (maintainers)
 

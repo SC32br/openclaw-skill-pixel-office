@@ -10,7 +10,7 @@ Each agent appears as an animated pixel character — walking, stretching, meeti
 
 ## Screenshots
 
-Files in repo: [`docs/screenshots/`](docs/screenshots/) — on GitHub: [folder `docs/screenshots`](https://github.com/SC32br/openclaw-skill-pixel-office/tree/main/docs/screenshots) (PNG are versioned; **push** your clone so they appear on github.com).
+PNG assets live under `docs/screenshots/` in git. **On github.com they only appear after those commits are pushed to `main`.** If the images below are broken or [the `docs/` folder is missing on `main`](https://github.com/SC32br/openclaw-skill-pixel-office), the remote is behind: clone/pull from a machine that has the latest commits, or push with `git push origin main` (maintainers).
 
 ### Live office (`/office/stream`)
 
