@@ -1,5 +1,7 @@
 # Screenshots
 
+**Remote check:** On GitHub, `main` did not contain `docs/` until a successful `git push` (verified via public API `GET .../contents/docs?ref=main` → 404, and headless Chromium on `github.com/.../tree/main/docs/screenshots` → “page not found”). After you push, that URL and README images will work.
+
 | File | Description |
 |------|-------------|
 | [office-stream.png](office-stream.png) | `/office/stream` — Pixi office canvas, sidebar, header metrics |
